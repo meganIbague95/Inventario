@@ -1,7 +1,7 @@
 package com.inventario.enums;
 
 public enum TipoTablaEnum {
-MARCA("MARCA","idMarca"),CATEGORIA("CATEGORIA","idCategoria"),TAMANIO("TAMANIO","idTamanio"), ORIGEN("ORIGEN","idOrigen"), TIPO("TIPOPRODUCTO","idTipoProducto"), TIPOINVENTARIO("TIPOINVENTARIO","idtipoInventario");
+MARCA("MARCA","idMarca"),CATEGORIA("CATEGORIA","idCategoria"),TAMANIO("TAMANIO","idTamanio"), ORIGEN("ORIGEN","idOrigen"), TIPO("TIPOPRODUCTO","idTipoProducto");
 	
 	private String nombreTabla;
 	private String nombreColumna;

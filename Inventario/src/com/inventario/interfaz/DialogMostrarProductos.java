@@ -55,7 +55,6 @@ public class DialogMostrarProductos extends JDialog{
 		setLocationRelativeTo(null);
 		createJtable();
 		setColumnJtable();
-//		adicionarProducto(negocioInventario.consultarProductoGenero(codigoGenero)ProductoGenero(codigoGenero)Genero("Mujer"));
 		inicializar();
 		
 	}

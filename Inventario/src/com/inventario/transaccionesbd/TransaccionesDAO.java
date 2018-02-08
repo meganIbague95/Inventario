@@ -136,7 +136,7 @@ public class TransaccionesDAO implements TransaccionesDAOInterface {
 		}
 	}
 
-		
+
 	public List<Producto> consultarProducto(Producto productoEntrada) throws Exception {
 		List<Producto> productos;
 		StringBuilder sql = new StringBuilder(ConstantesSQL.CONSULTAR_PRODUCTOS);
@@ -163,15 +163,16 @@ public class TransaccionesDAO implements TransaccionesDAOInterface {
 			if(productoEntrada.getTipo()!=null && productoEntrada.getTipo().getIdTipo()!=null){
 				sql.append(ConstantesSQL.CONSULTAR_PRODUCTO_TIPO);
 			}
+			sql.append(ConstantesSQL.ORDENAR);
 			log.escribirInfo(sql.toString());
 			System.out.println(sql.toString());
 			ps = conexion.prepareStatement(sql.toString());
 			int i=1;
 			if(productoEntrada.getGenero()!=null && !productoEntrada.getGenero().trim().equals("")){
-			ps.setString(i, productoEntrada.getGenero());
-			i++;
+				ps.setString(i, productoEntrada.getGenero());
+				i++;
 			}
-			
+
 			if(productoEntrada.getCategoria()!=null && productoEntrada.getCategoria().getIdCategoria()!=null){
 				ps.setInt(i, productoEntrada.getCategoria().getIdCategoria());
 				i++;
@@ -192,7 +193,6 @@ public class TransaccionesDAO implements TransaccionesDAOInterface {
 				ps.setInt(i, productoEntrada.getTipo().getIdTipo());
 				i++;
 			}
-			
 			set = ps.executeQuery();
 			productos = new ArrayList<Producto>();
 			while (set.next()) {
@@ -214,9 +214,9 @@ public class TransaccionesDAO implements TransaccionesDAOInterface {
 		return productos;
 	}
 
-	
 
-	
+
+
 
 	@Override
 	public void insertarObjetos(TipoTablaEnum tipoTabla, String nombre) throws Exception {
@@ -228,7 +228,7 @@ public class TransaccionesDAO implements TransaccionesDAOInterface {
 		try {
 			conexion = ConnectionManagerJDBC.getConnection();
 			ps = conexion.prepareStatement(sql.toString());
-			
+
 			ps.setString(1, nombre);
 
 			ps.executeUpdate();
@@ -296,7 +296,7 @@ public class TransaccionesDAO implements TransaccionesDAOInterface {
 			ps = conexion.prepareStatement(sql.toString());
 			ps.setString(1, marca.getNombreMarca());
 			ps.setInt(2, marca.getIdMarca());
-			
+
 			ps.executeUpdate();
 			conexion.commit();
 		} finally {
@@ -381,7 +381,7 @@ public class TransaccionesDAO implements TransaccionesDAOInterface {
 	public void eliminarObjeto(TipoTablaEnum tipoTabla, Object objeto) throws Exception {
 		StringBuilder sql = new StringBuilder(ConstantesSQL.ELIMINAR_PARAMETRIZACION);
 		sql.append(tipoTabla.getNombreTabla()).append(ConstantesSQL.WHERE).append(tipoTabla.getNombreColumna())
-				.append(ConstantesSQL.PARAMETRO);
+		.append(ConstantesSQL.PARAMETRO);
 
 		PreparedStatement ps = null;
 		Connection conexion = null;
@@ -510,8 +510,8 @@ public class TransaccionesDAO implements TransaccionesDAOInterface {
 			ps.setString(2, usuario.getContraseña());
 			ps.setInt(3, usuario.getPerfil().getIdPerfil());
 			if(usuario.getPersona()!=null){
-			ps.setString(4, usuario.getPersona().getTipoDocumento());
-			ps.setInt(5, usuario.getPersona().getDocumento());
+				ps.setString(4, usuario.getPersona().getTipoDocumento());
+				ps.setInt(5, usuario.getPersona().getDocumento());
 			}else{
 				ps.setNull(4, Types.VARCHAR);
 				ps.setNull(5, Types.NUMERIC);
@@ -799,7 +799,7 @@ public class TransaccionesDAO implements TransaccionesDAOInterface {
 	@Override
 	public void crearPeriodico(InventarioPeriodico inventarioPeriodico) throws Exception {
 		StringBuilder sql = new StringBuilder(ConstantesSQL.CREAR_INVENTARIO_PERIODICO);
-		
+
 		PreparedStatement ps = null;
 		Connection conexion = null;
 		try {
@@ -842,8 +842,209 @@ public class TransaccionesDAO implements TransaccionesDAOInterface {
 			ConnectionManagerJDBC.closeConnection(conexion);
 		}
 		return inventario;
-		
+
+
+	}
+
+	@Override
+	public ArrayList<Producto> consultarProductosInventario(Integer idInventario) throws Exception {
+		ArrayList<Producto> productos=new ArrayList<Producto>();
+		StringBuilder sql = new StringBuilder(ConstantesSQL.CONSULTAR_PRODUCTO_INVENTARIO);
+		sql.append(ConstantesSQL.ORDENAR);
+		PreparedStatement ps = null;
+		Connection conexion = null;
+		ResultSet set = null;
+		Producto producto = null;
+		try {
+			conexion = ConnectionManagerJDBC.getConnection();
+			ps = conexion.prepareStatement(sql.toString());
+			ps.setInt(1, idInventario);
+			set = ps.executeQuery();
+			while(set.next()) {
+				Marca marca = new Marca(set.getInt(5), set.getString(11));
+				Categoria categoria = new Categoria(set.getInt(2), set.getString(12));
+				Tamanio tamanio = new Tamanio(set.getInt(7), set.getString(13));
+				TipoProducto tipopro = new TipoProducto(set.getInt(4), set.getString(15));
+				Origen origen = new Origen(set.getInt(9), set.getString(14));
+				producto = new Producto(set.getString(1), categoria, set.getString(3), tipopro, marca,
+						set.getBigDecimal(6), tamanio, set.getInt(8), origen,set.getInt(10),set.getBigDecimal(16));
+				System.out.println(producto.getNombreProducto());
+				productos.add(producto);
+				conexion.commit();
+			}
+
+		} finally {
+			ConnectionManagerJDBC.closeResultSet(set);
+			ConnectionManagerJDBC.closePreparedStatement(ps);
+			ConnectionManagerJDBC.closeConnection(conexion);
+		}
+		return productos;
+	}
+
+	@Override
+	public List<Inventario> consultarInventarios(String tipoInventario) throws Exception {
+		ArrayList<Inventario> inventarios =new ArrayList<Inventario>();
+		StringBuilder sql = new StringBuilder(ConstantesSQL.CONSULTAR_INVENTARIO);
+		PreparedStatement ps = null;
+		Connection conexion = null;
+		ResultSet set = null;
+		Producto producto = null;
+		try {
+			conexion = ConnectionManagerJDBC.getConnection();
+			ps = conexion.prepareStatement(sql.toString());
+			ps.setString(1, tipoInventario);
+			set = ps.executeQuery();
+			while (set.next()) {
+				Integer id= set.getInt(1);
+				BigDecimal precioVenta=set.getBigDecimal(2);
+				String tipo=set.getString(3);
+				java.sql.Date fechaInventario=set.getDate(4);
+				Inventario inventario= new Inventario(id, precioVenta, tipoInventario, fechaInventario);
+				inventarios.add(inventario);
+			}
+
+		} finally {
+			ConnectionManagerJDBC.closeResultSet(set);
+			ConnectionManagerJDBC.closePreparedStatement(ps);
+			ConnectionManagerJDBC.closeConnection(conexion);
+		}
+		return inventarios;
+	}
+
+	@Override
+	public List<Producto> consultarProductoPorInventario(Integer idInventario,Producto productoEntrada) throws Exception {
+		List<Producto> productos;
+		StringBuilder sql = new StringBuilder(ConstantesSQL.CONSULTAR_PRODUCTO_INVENTARIO);
+		PreparedStatement ps = null;
+		Connection conexion = null;
+		ResultSet set = null;
+		try {
+			conexion = ConnectionManagerJDBC.getConnection();
+			if(productoEntrada.getGenero()!=null && !productoEntrada.getGenero().trim().equals("")){
+				sql.append(ConstantesSQL.CONSULTAR_PRODUCTO_GENERO);
+			}
+			if(productoEntrada.getCategoria()!=null && productoEntrada.getCategoria().getIdCategoria()!=null){
+				sql.append(ConstantesSQL.CONSULTAR_PRODUCTO_CATEGORIA);
+			}
+			if(productoEntrada.getMarca()!=null && productoEntrada.getMarca().getIdMarca()!=null){
+				sql.append(ConstantesSQL.CONSULTAR_PRODUCTO_MARCA);
+			}
+			if(productoEntrada.getOrigen()!=null && productoEntrada.getOrigen().getIdOrigen()!=null){
+				sql.append(ConstantesSQL.CONSULTAR_PRODUCTO_ORIGEN);
+			}
+			if(productoEntrada.getTamanio()!=null && productoEntrada.getTamanio().getIdTamanio()!=null){
+				sql.append(ConstantesSQL.CONSULTAR_PRODUCTO_TAMANIO);
+			}
+			if(productoEntrada.getTipo()!=null && productoEntrada.getTipo().getIdTipo()!=null){
+				sql.append(ConstantesSQL.CONSULTAR_PRODUCTO_TIPO);
+			}
+			sql.append(ConstantesSQL.ORDENAR);
+			log.escribirInfo(sql.toString());
+			System.out.println(sql.toString());
+			ps = conexion.prepareStatement(sql.toString());
+			ps.setInt(1, idInventario);
+			int i=1;
+			if(productoEntrada.getGenero()!=null && !productoEntrada.getGenero().trim().equals("")){
+				ps.setString(i, productoEntrada.getGenero());
+				i++;
+			}
+
+			if(productoEntrada.getCategoria()!=null && productoEntrada.getCategoria().getIdCategoria()!=null){
+				ps.setInt(i, productoEntrada.getCategoria().getIdCategoria());
+				i++;
+			}
+			if(productoEntrada.getMarca()!=null && productoEntrada.getMarca().getIdMarca()!=null){
+				ps.setInt(i, productoEntrada.getMarca().getIdMarca());
+				i++;
+			}
+			if(productoEntrada.getOrigen()!=null && productoEntrada.getOrigen().getIdOrigen()!=null){
+				ps.setInt(i, productoEntrada.getOrigen().getIdOrigen());
+				i++;
+			}
+			if(productoEntrada.getTamanio()!=null && productoEntrada.getTamanio().getIdTamanio()!=null){
+				ps.setInt(i, productoEntrada.getTamanio().getIdTamanio());
+				i++;
+			}
+			if(productoEntrada.getTipo()!=null && productoEntrada.getTipo().getIdTipo()!=null){
+				ps.setInt(i, productoEntrada.getTipo().getIdTipo());
+				i++;
+			}
+
+			set = ps.executeQuery();
+			productos = new ArrayList<Producto>();
+			while (set.next()) {
+				Marca marca = new Marca(set.getInt(5), set.getString(11));
+				Categoria categoria = new Categoria(set.getInt(2), set.getString(12));
+				Tamanio tamanio = new Tamanio(set.getInt(7), set.getString(13));
+				TipoProducto tipo = new TipoProducto(set.getInt(4), set.getString(15));
+				Origen origen = new Origen(set.getInt(9), set.getString(14));
+				Producto producto = new Producto(set.getString(1), categoria, set.getString(3), tipo, marca,
+						set.getBigDecimal(6), tamanio, set.getInt(8), origen,set.getInt(10),set.getBigDecimal(16));
+				productos.add(producto);
+			}
+
+		} finally {
+			ConnectionManagerJDBC.closeResultSet(set);
+			ConnectionManagerJDBC.closePreparedStatement(ps);
+			ConnectionManagerJDBC.closeConnection(conexion);
+		}
+		return productos;
+	}
+
+	@Override
+	public void eliminarProductoInventario(Integer codigo) throws Exception {
+		StringBuilder sql = new StringBuilder(ConstantesSQL.ELIMINAR_INVENTARIO_PERIODICO);
+		PreparedStatement ps = null;
+		Connection conexion = null;
+		try {
+			conexion = ConnectionManagerJDBC.getConnection();
+			ps = conexion.prepareStatement(sql.toString());
+			ps.setInt(1, codigo);
+
+			ps.executeUpdate();
+			conexion.commit();
+		} finally {
+			ConnectionManagerJDBC.closePreparedStatement(ps);
+			ConnectionManagerJDBC.closeConnection(conexion);
+		}
+	}
+
+	@Override
+	public void eliminarInventarioPeriodico(Integer codigo) throws Exception {
+		StringBuilder sql = new StringBuilder(ConstantesSQL.ELIMINAR_INVENTARIO_PERIODICO_PORINV);
+		PreparedStatement ps = null;
+		Connection conexion = null;
+		try {
+			conexion = ConnectionManagerJDBC.getConnection();
+			ps = conexion.prepareStatement(sql.toString());
+			ps.setInt(1, codigo);
+
+			ps.executeUpdate();
+			conexion.commit();
+		} finally {
+			ConnectionManagerJDBC.closePreparedStatement(ps);
+			ConnectionManagerJDBC.closeConnection(conexion);
+		}
 		
 	}
+
+	@Override
+	public void eliminarInventario(Integer codigo) throws Exception {
+		StringBuilder sql = new StringBuilder(ConstantesSQL.ELIMINAR_INVENTARIO);
+		PreparedStatement ps = null;
+		Connection conexion = null;
+		try {
+			conexion = ConnectionManagerJDBC.getConnection();
+			ps = conexion.prepareStatement(sql.toString());
+			ps.setInt(1, codigo);
+
+			ps.executeUpdate();
+			conexion.commit();
+		} finally {
+			ConnectionManagerJDBC.closePreparedStatement(ps);
+			ConnectionManagerJDBC.closeConnection(conexion);
+		}		
+	}		
+
 
 }

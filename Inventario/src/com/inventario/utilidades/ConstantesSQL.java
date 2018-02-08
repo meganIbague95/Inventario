@@ -48,4 +48,10 @@ public class ConstantesSQL {
 	public static final String CREAR_INVENTARIO="INSERT INTO INVENTARIO(fechaCreacion,precioTotal,tipoInventario,fechaInventario)values(sysdate(),?,?,?)";
 	public static final String CREAR_INVENTARIO_PERIODICO="INSERT INTO INVENTARIOPERIODICO(cantidad,precioVenta,idInventario,idProducto,fechaCreacion)values(?,?,?,?,sysdate())";
 	public static final String CONSULTAR_CODIGO_INVENTARIO="SELECT idInventario,precioTotal,tipoInventario,fechaInventario from INVENTARIO order by idInventario desc limit 1";
+	public static final String CONSULTAR_PRODUCTO_INVENTARIO="SELECT p.nombre,c.idCategoria,p.genero,t.idTipoProducto,m.idMarca,p.precioCompra,ta.idTamanio,p.idProducto, o.idOrigen, p.cantidad,m.nombre,c.nombre,ta.nombre, o.nombre,t.nombre,p.precioventa FROM PRODUCTO p,MARCA m,CATEGORIA c,TAMANIO ta,ORIGEN o, TIPOPRODUCTO t, inventarioperiodico ip, inventario i where p.idmarca=m.idmarca and c.idCategoria=p.idCategoria and t.idTipoProducto=p.idTipo and ta.idTamanio=p.idTamanio and o.idOrigen=p.idOrigen and  p.idproducto=ip.idproducto and i.idinventario=ip.idinventario and i.idinventario=? ";
+	public static final String CONSULTAR_INVENTARIO="SELECT idinventario, preciototal,tipoinventario,fechainventario from inventario where tipoinventario=?";
+	public static final String ORDENAR=" ORDER BY p.NOMBRE ASC";
+	public static final String ELIMINAR_INVENTARIO_PERIODICO="DELETE FROM INVENTARIOPERIODICO WHERE idProducto=?";
+	public static final String ELIMINAR_INVENTARIO_PERIODICO_PORINV="DELETE FROM INVENTARIOPERIODICO WHERE idInventario=?";
+	public static final String ELIMINAR_INVENTARIO="DELETE FROM INVENTARIO WHERE idInventario=?";
 }

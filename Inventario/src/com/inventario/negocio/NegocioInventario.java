@@ -122,8 +122,53 @@ public class NegocioInventario {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		return inventario;
-				
-		
+		return inventario;		
 	}
+	public List<Producto> consultarProductoInventario(Integer idInventario) {
+		List<Producto> lista= new ArrayList<Producto>();
+		try {
+			lista= dao.consultarProductosInventario(idInventario);
+		} catch (Exception e) {
+			log.escribirError("Error al consultar Producto " + idInventario, e);
+		}
+		return lista;
+	}
+	
+	public List<Inventario> consultarInventarios(String tipo) {
+		List<Inventario> lista= new ArrayList<Inventario>();
+		try {
+			lista=dao.consultarInventarios(tipo);
+		} catch (Exception e) {
+			log.escribirError("Error al consultar Producto " + tipo, e);
+		}
+		return lista;
+	}
+public List<Producto> consultarProductoPorInventario(Integer idinventario,Producto producto) {
+	List<Producto> lista= new ArrayList<Producto>();
+	try {
+		lista= dao.consultarProductoPorInventario(idinventario,producto);
+	} catch (Exception e) {
+		log.escribirError("Error al consultar Producto " + producto, e);
+	}
+	return lista;
+}
+public void eliminarInventarioPeriodico(Integer idProducto){
+	try {
+		dao.eliminarProductoInventario(idProducto);
+	} catch (Exception e) {
+		// TODO Auto-generated catch block
+		e.printStackTrace();
+	}
+	
+}
+public void eliminarInventario(Integer idProducto){
+	try {
+		dao.eliminarInventarioPeriodico(idProducto);
+		dao.eliminarInventario(idProducto);
+	} catch (Exception e) {
+		// TODO Auto-generated catch block
+		e.printStackTrace();
+	}
+	
+}
 }

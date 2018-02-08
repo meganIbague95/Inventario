@@ -157,7 +157,7 @@ public class DialogEditarProducto extends JDialog {
 		btnCerrar= new JButton("Cerrar");
 		btnCerrar.setBounds(300, 300, 100, 25);
 		btnCerrar.addActionListener(this.controlador);
-		btnCerrar.setActionCommand(ConstantesInterfaz.CERRAR);
+		btnCerrar.setActionCommand(ConstantesInterfaz.CERRAR_EDITAR_PRODUCTO);
 		this.add(lblNombre);
 		this.add(txtNombre);
 		this.add(lblCategoria);

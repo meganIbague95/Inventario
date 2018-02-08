@@ -1,6 +1,7 @@
 package com.inventario.transaccionesbd;
 
 
+import java.util.ArrayList;
 import java.util.List;
 
 import com.inventario.enums.TipoTablaEnum;
@@ -52,4 +53,11 @@ public interface TransaccionesDAOInterface {
 	public void crearInventario(Inventario inventario)throws Exception;
 	public void crearPeriodico(InventarioPeriodico inventarioPeriodico)throws Exception;
 	public Inventario consultarInventario()throws Exception;
+	public ArrayList<Producto> consultarProductosInventario(Integer idInventario)throws Exception;
+	public List<Inventario> consultarInventarios(String tipoInventario)throws Exception; 
+	public List<Producto> consultarProductoPorInventario(Integer idinventario,Producto productoEntrada) throws Exception;
+	public void eliminarProductoInventario(Integer codigo)throws Exception;
+	public void eliminarInventarioPeriodico(Integer codigo)throws Exception;
+	public void eliminarInventario(Integer codigo)throws Exception;
+	
 }
